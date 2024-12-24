@@ -1,7 +1,6 @@
 import 'dart:convert';
-
 import 'package:http/http.dart' as http;
-import 'package:shared/shared.dart';
+import 'package:twilight_imperium/shared/http/login/login_request.dart';
 
 class HTTPConnector {
   static const String _host = 'http://localhost:3000';

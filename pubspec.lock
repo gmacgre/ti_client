@@ -131,15 +131,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.8.3"
-  shared:
-    dependency: "direct main"
-    description:
-      path: "."
-      ref: master
-      resolved-ref: "38bf7952ebf445147f7fb4e36d729bc4e7551443"
-      url: "https://github.com/gmacgre/ti_shared.git"
-    source: git
-    version: "1.0.1"
   sky_engine:
     dependency: transitive
     description: flutter

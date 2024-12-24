@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:shared/shared.dart';
 import 'package:twilight_imperium/http/http_connector.dart';
+import 'package:twilight_imperium/shared/http/login/login_request.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({

@@ -15,7 +15,9 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Twilight Imperium',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.amberAccent),
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.amber,
+        ),
         useMaterial3: true,
       ),
       home: const BasePage(),
@@ -36,7 +38,6 @@ class _BasePageState extends State<BasePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      
       body: switch (currPage) {
         Pages.login => LoginPage(onSuccessfulLogin: (key) {
           setState(() {

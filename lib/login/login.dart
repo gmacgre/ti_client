@@ -107,15 +107,22 @@ class _LoginPageState extends State<LoginPage> {
         setState(() {
             active = false;
         });
-        LoginRequest request = LoginRequest()
-            ..gameName = gameName
-            ..gamePassword = 'password'
-            ..username = username
-            ..password = password;
+        
+        const snackBar = SnackBar(
+          content: Text('Yay! A SnackBar!'),
+        );
 
         (createGame) ? 
             await HTTPConnector.createGame() :
-            await HTTPConnector.login(request);
+            await HTTPConnector.login(
+              LoginRequest(''),
+              () { // On Success
+                ScaffoldMessenger.of(context).showSnackBar(snackBar);
+              },
+              () { // On Error
+                ScaffoldMessenger.of(context).showSnackBar(snackBar);
+              }
+            );
 
         setState(() {
           active = true;

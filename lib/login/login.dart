@@ -104,24 +104,23 @@ class _LoginPageState extends State<LoginPage> {
   }
   
   Future<void> _createOrLogin(bool createGame) async {
+
     if(_formKey.currentState!.validate()) {
         setState(() {
             active = false;
-        });
-        
-        const snackBar = SnackBar(
-          content: Text('Yay! A SnackBar!'),
-        );
-
+        });        
         (createGame) ? 
-            await HTTPConnector.createGame() :
+            await HTTPConnector.createGame(
+
+            ) :
             await HTTPConnector.login(
-              LoginRequest(''),
+              LoginRequest('', username, password, gameName, ''),
               (LoginResponse res) { // On Success
-                ScaffoldMessenger.of(context).showSnackBar(snackBar);
-              },
-              () { // On Error
-                ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(res.message ?? 'No Message Given: Response was ${res.isSuccess}'),
+                  )
+                );
               }
             );
 

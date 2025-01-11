@@ -1,34 +1,36 @@
 import 'dart:convert';
 import 'package:twilight_imperium/shared/http/login/login_request.dart';
 import 'package:twilight_imperium/shared/http/login/login_response.dart';
+import 'package:twilight_imperium/shared/http/request.dart';
 import 'package:uuid/uuid.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 class HTTPConnector {
   static const String _host = 'ws://localhost:3000';
   static WebSocketChannel? _connection;
-  static final Map<String, Function> _onHoldSuccess = {};
-  static final Map<String, Function> _onHoldError = {};
+  static final Map<String, Function> _onHold = {};
   static const Uuid _uuid = Uuid();
 
-  static Future<void> login(LoginRequest request, Function onSuccess, Function onError) async {
-    request.uuid = _uuid.v4();
-    _putOnHold(request.uuid, onSuccess, onError);
+
+  // Give Type Checking to Message Sending
+  static Future<void> login(LoginRequest request, void Function(LoginResponse) handler) async {
+    await _sendRequest(request, handler);
+  }
+
+  // Gen
+  static Future<void> _sendRequest(TIRequest req, Function handler) async {
+    req.uuid = _uuid.v4();
+    _onHold[req.uuid] = handler;
     WebSocketChannel channel = await _getConnection();
-    channel.sink.add(jsonEncode(request.toJson()));
+    channel.sink.add(jsonEncode(req));
   }
   
   static Future<void> createGame() async {
 
   }
 
-  static void _putOnHold(String uuid, Function onSuccess, Function onError) {
-    _onHoldSuccess[uuid] = onSuccess;
-    _onHoldError[uuid] = onError;
-  }
-
+  // Start Handle Code for each type
   static void _handleMessage(dynamic message) {
-    // TODO: Client Response to Server
     Map<String, dynamic> parsed = jsonDecode(message);
     switch(parsed['type']) {
       case 'Login':
@@ -38,16 +40,10 @@ class HTTPConnector {
 
   static void _handleLoginResponse(Map<String, dynamic> content) {
     LoginResponse res = LoginResponse.fromJson(content);
-    if (res.isSuccess && _onHoldSuccess.containsKey(res.uuid)) {
-      _onHoldSuccess[res.uuid]!(res);
-      _onHoldSuccess.remove(res.uuid);
-      _onHoldError.remove(res.uuid);
+    if (_onHold.containsKey(res.uuid)) {
+      _onHold[res.uuid]!(res);
     }
-    else if (!res.isSuccess && _onHoldError.containsKey(res.uuid)) {
-      _onHoldError[res.uuid]!(res); 
-    }
-    _onHoldSuccess.remove(res.uuid);
-    _onHoldError.remove(res.uuid);
+    _onHold.remove(res.uuid);
   }
 
   static Future<WebSocketChannel> _getConnection() async {
@@ -60,6 +56,7 @@ class HTTPConnector {
   }
 
   static void closeSocket() async {
+    _connection!.sink.close();
     _connection = null;
   }
 }

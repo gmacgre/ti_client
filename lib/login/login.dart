@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:twilight_imperium/http/http_connector.dart';
 import 'package:twilight_imperium/shared/http/login/login_request.dart';
+import 'package:twilight_imperium/shared/http/login/login_response.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({
@@ -116,7 +117,7 @@ class _LoginPageState extends State<LoginPage> {
             await HTTPConnector.createGame() :
             await HTTPConnector.login(
               LoginRequest(''),
-              () { // On Success
+              (LoginResponse res) { // On Success
                 ScaffoldMessenger.of(context).showSnackBar(snackBar);
               },
               () { // On Error

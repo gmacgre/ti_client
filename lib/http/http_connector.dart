@@ -29,7 +29,6 @@ class HTTPConnector {
 
   static void _handleMessage(dynamic message) {
     // TODO: Client Response to Server
-    // Assume that the response is in JSON format
     Map<String, dynamic> parsed = jsonDecode(message);
     switch(parsed['type']) {
       case 'Login':
@@ -41,7 +40,14 @@ class HTTPConnector {
     LoginResponse res = LoginResponse.fromJson(content);
     if (res.isSuccess && _onHoldSuccess.containsKey(res.uuid)) {
       _onHoldSuccess[res.uuid]!(res);
+      _onHoldSuccess.remove(res.uuid);
+      _onHoldError.remove(res.uuid);
     }
+    else if (!res.isSuccess && _onHoldError.containsKey(res.uuid)) {
+      _onHoldError[res.uuid]!(res); 
+    }
+    _onHoldSuccess.remove(res.uuid);
+    _onHoldError.remove(res.uuid);
   }
 
   static Future<WebSocketChannel> _getConnection() async {
@@ -54,8 +60,6 @@ class HTTPConnector {
   }
 
   static void closeSocket() async {
-    WebSocketChannel channel = await _getConnection();
-    channel.sink.close();
     _connection = null;
   }
 }

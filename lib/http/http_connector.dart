@@ -1,7 +1,8 @@
 import 'dart:convert';
-import 'package:twilight_imperium/shared/http/login/login_request.dart';
-import 'package:twilight_imperium/shared/http/login/login_response.dart';
+import 'package:twilight_imperium/shared/http/create_request.dart';
+import 'package:twilight_imperium/shared/http/login_request.dart';
 import 'package:twilight_imperium/shared/http/request.dart';
+import 'package:twilight_imperium/shared/http/response.dart';
 import 'package:uuid/uuid.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
@@ -13,33 +14,33 @@ class HTTPConnector {
 
 
   // Give Type Checking to Message Sending
-  static Future<void> login(LoginRequest request, void Function(LoginResponse) handler) async {
-    await _sendRequest(request, handler);
+  static Future<void> login(LoginRequest request, void Function(TIResponse) handler, void Function() onError) async {
+    await _sendRequest(request, handler, onError);
   }
 
-  // Gen
-  static Future<void> _sendRequest(TIRequest req, Function handler) async {
+  static Future<void> createGame(CreateRequest request, void Function(TIResponse) handler, void Function() onError) async {
+    await _sendRequest(request, handler, onError);
+  }
+
+  // Send the Request
+  static Future<void> _sendRequest(TIRequest req, Function handler, Function onError) async {
     req.uuid = _uuid.v4();
     _onHold[req.uuid] = handler;
-    WebSocketChannel channel = await _getConnection();
-    channel.sink.add(jsonEncode(req));
-  }
-  
-  static Future<void> createGame() async {
-
+    WebSocketChannel channel;
+    try {
+      channel = await _getConnection();
+      channel.sink.add(jsonEncode(req));
+    }
+    on WebSocketChannelException {
+      closeSocket();
+      _onHold.remove(req.uuid);
+      onError();
+    }
   }
 
   // Start Handle Code for each type
   static void _handleMessage(dynamic message) {
-    Map<String, dynamic> parsed = jsonDecode(message);
-    switch(parsed['type']) {
-      case 'Login':
-        _handleLoginResponse(parsed);
-    }
-  }
-
-  static void _handleLoginResponse(Map<String, dynamic> content) {
-    LoginResponse res = LoginResponse.fromJson(content);
+    TIResponse res = TIResponse.fromJson(jsonDecode(message));
     if (_onHold.containsKey(res.uuid)) {
       _onHold[res.uuid]!(res);
     }
@@ -50,7 +51,7 @@ class HTTPConnector {
     if(_connection == null) {
         _connection = WebSocketChannel.connect(Uri.parse(_host));
         await _connection!.ready;
-        _connection!.stream.listen(_handleMessage);
+        _connection!.stream.listen(_handleMessage).onDone(closeSocket);
     }
     return _connection!;
   }

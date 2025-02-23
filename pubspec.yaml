@@ -38,6 +38,7 @@ dependencies:
   web_socket_channel: ^2.4.0
   uuid: ^4.5.1
   provider: ^6.1.2
+  hexagon: ^0.2.0
 
 dev_dependencies:
   flutter_test:

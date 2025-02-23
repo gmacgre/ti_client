@@ -6,7 +6,7 @@ enum Page {
 }
 
 class PageState extends ChangeNotifier {
-  Page _currPage = Page.login;
+  Page _currPage = Page.main;
   void changePage(Page newPage) {
     _currPage = newPage;
     notifyListeners();

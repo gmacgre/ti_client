@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hexagon/hexagon.dart';
 import 'package:twilight_imperium/resources/colors.dart';
-import 'package:twilight_imperium/main/map_tile.dart';
+import 'package:twilight_imperium/main/map/map_tile.dart';
 
 class MapPanel extends StatefulWidget {
   const MapPanel({super.key});
@@ -11,8 +11,7 @@ class MapPanel extends StatefulWidget {
 }
 
 class _MapPanelState extends State<MapPanel> {
-  final double internalwidth = 2500;
-  final double internalheight = 2500;
+  final double internalLength = 2500;
   @override
   Widget build(BuildContext context) {
     return InteractiveViewer(
@@ -21,23 +20,24 @@ class _MapPanelState extends State<MapPanel> {
       child: LayoutBuilder(
         builder: (context, constraints) => Stack(
           children:[
-            SizedBox(height: internalwidth, width: internalwidth, child: Image.asset('assets/images/basebackground.jpg', fit: BoxFit.cover,)),
+            SizedBox(
+              height: internalLength,
+              width: internalLength, 
+              child: Image.asset('images/basebackground.jpg', fit: BoxFit.cover,)),
             Positioned.fill(
               child: Align(
                 alignment: Alignment.center,
                 child: HexagonGrid.flat(
-                  width: internalwidth,
-                  height: internalheight,
+                  width: internalLength,
+                  height: internalLength,
                   color: Colors.transparent,
                   depth: 3,
                   buildTile: (coordinates) => HexagonWidgetBuilder(
                     color: TIColors.tileBase,
                     padding: 5,
                     cornerRadius: 8.0,
-                  ),
-                  buildChild: (coordinates) {
-                    return MapTile(coords: coordinates);
-                  } 
+                    child: MapTile(coords: coordinates)
+                  )
                 ),
               ),
             ),

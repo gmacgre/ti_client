@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hexagon/hexagon.dart';
 import 'package:provider/provider.dart';
+import 'package:twilight_imperium/resources/audio.dart';
 import 'package:twilight_imperium/resources/colors.dart';
 import 'package:twilight_imperium/state/state_game.dart';
 import 'package:twilight_imperium/state/state_turn.dart';
@@ -25,11 +26,12 @@ class _MapTileState extends State<MapTile> {
           if(ts != null) {
             Provider.of<TurnState>(context, listen: false).currentStage = ts;
           }
-          print('${widget.coords}');
+          AudioManager.manager.playClick();
         },
-        child: Container(width: constraints.maxWidth, height: constraints.maxHeight,
-          decoration: BoxDecoration(color: TIColors.panelDivider),
-          child: Text("Bababooey", style: TextStyle(color: TIColors.bodyText),),
+        child: Container(
+          color: Colors.white,
+          width: constraints.maxWidth, height: constraints.maxHeight,
+          child: Center(child: Text("Bababooey", style: TextStyle(color: TIColors.bodyText),)),
         )
       ),
     );

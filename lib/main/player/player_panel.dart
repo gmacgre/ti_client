@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:twilight_imperium/main/player/player_tab.dart';
+import 'package:twilight_imperium/main/player/world_tab.dart';
 import 'package:twilight_imperium/resources/colors.dart';
+import 'package:twilight_imperium/resources/icons.dart';
 import 'package:twilight_imperium/state/state_game.dart';
 
 class PlayerPanel extends StatefulWidget {
@@ -16,8 +19,15 @@ class _PlayerPanelState extends State<PlayerPanel> {
   @override
   Widget build(BuildContext context) {
     GameState gs = context.watch<GameState>();
+    List<Widget> tabBarView = [];
+    tabBarView.addAll(gs.game.players.map((e) => PlayerTab(player: e)).toList());
+    tabBarView.add(WorldInfoTab(state: gs));
+    List<Tab> tabBar = gs.game.players.map((e) => Tab(icon: Image.asset(IconLib.getIcon(e.race)))).toList();
+    tabBar.add(Tab(icon: Image.asset(IconLib.getIcon('jol_nar'))));
+
     return DefaultTabController(
-      length: gs.game.players.length,
+      initialIndex: gs.game.players.length,
+      length: gs.game.players.length + 1,
       child: Scaffold(
         appBar: AppBar(
           shape: Border(right: BorderSide(color: TIColors.panelDivider, width: dividerWidth),),
@@ -25,7 +35,7 @@ class _PlayerPanelState extends State<PlayerPanel> {
           title: DecoratedBox(
             decoration: BoxDecoration(color: TIColors.panelTitleBase),
             child: TabBar(
-              tabs: gs.game.players.map((e) => const Tab(icon: Icon(Icons.abc))).toList()
+              tabs: tabBar
             ),
           ),
         ),
@@ -35,7 +45,7 @@ class _PlayerPanelState extends State<PlayerPanel> {
             border: Border(right: BorderSide(color: TIColors.panelDivider, width: dividerWidth))
           ),
           child: TabBarView(
-            children: gs.game.players.map((e) => const Icon(Icons.abc)).toList()
+            children: tabBarView
           ),
         ),
       )

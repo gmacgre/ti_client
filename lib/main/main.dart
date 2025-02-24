@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:twilight_imperium/main/command_panel.dart';
-import 'package:twilight_imperium/main/map_panel.dart';
-import 'package:twilight_imperium/main/player_panel.dart';
+import 'package:provider/provider.dart';
+import 'package:twilight_imperium/main/command/command_panel.dart';
+import 'package:twilight_imperium/main/map/map_panel.dart';
+import 'package:twilight_imperium/main/player/player_panel.dart';
+import 'package:twilight_imperium/state/state_game.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
@@ -11,6 +13,13 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
+  
+  @override
+  void initState() {
+    Provider.of<GameState>(context, listen: false).populate();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
